@@ -5,12 +5,14 @@ metadata:
 spec:
   initContainers:
     - name: init-myservice
-      image: quay.io/hgao/init-container:2885
-      command: [amqcfg --help]
+      image: quay.io/hgao/init-container:bug2885
+      imagePullPolicy: Always
+      command: ["/bin/bash"]
+      args: ["-c", "amqcfg --help"]
 
   containers:
     - name: app
       image: alpine
-      command: ["bin/sh"]
+      command: ["/bin/sh"]
       args: ["-c", "while true; do echo hello; sleep 5; done"]
 

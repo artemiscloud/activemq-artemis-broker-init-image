@@ -20,7 +20,8 @@ RUN dnf install git -y
 RUN mkdir -p /tmp/amqcfg
 WORKDIR /tmp/amqcfg
 
-RUN git clone https://github.com/gaohoward/amqcfg.git .
+RUN git clone https://github.com/gaohoward/YamlConfiger.git .
+RUN git checkout -b 2.14.0
 RUN python3 -m virtualenv -p python3 venv3
 
 RUN ls -lrt

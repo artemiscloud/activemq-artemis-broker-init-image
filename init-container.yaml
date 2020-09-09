@@ -3,16 +3,24 @@ apiVersion: v1
 metadata:
   name: init-container-test
 spec:
+  volumes:
+    - name: tool-dir
+      emptyDir: {}
   initContainers:
     - name: init-myservice
       image: quay.io/hgao/init-container:bug2885
       imagePullPolicy: Always
       command: ["/bin/bash"]
-      args: ["-c", "amqcfg --help"]
-
+      args: ["-c", "amqcfg --help; cp /usr/local/bin/amqcfg /tools/amqcfg; ls -lrt /tools; /tools/amqcfg --help"]
+      volumeMounts:
+        - name: tool-dir
+          mountPath: /tools
   containers:
     - name: app
       image: alpine
       command: ["/bin/sh"]
-      args: ["-c", "while true; do echo hello; sleep 5; done"]
+      args: ["-c", "ls -lrt /tools; /tools/amqcfg --help; while true; do echo hello; sleep 5; done"]
+      volumeMounts:
+        - name: tool-dir
+          mountPath: /tools
 

@@ -17,22 +17,18 @@ RUN dnf install -y pip
 RUN pip install virtualenv 
 RUN dnf install git -y
 
-RUN mkdir -p /tmp/amqcfg
-WORKDIR /tmp/amqcfg
+RUN mkdir -p /tmp/yacfg
+WORKDIR /tmp/yacfg
 
-RUN git clone https://github.com/gaohoward/YamlConfiger.git .
-RUN git checkout -b 2.14.0
+RUN git clone https://github.com/rh-messaging-qe/yacfg .
+RUN git checkout master
 RUN python3 -m virtualenv -p python3 venv3
-
-RUN ls -lrt
 
 RUN sed -i 's/python/python3/g' ./setup.py
 
-RUN /bin/bash -c "source venv3/bin/activate"; ./setup.py install
+RUN /bin/bash -c "source venv3/bin/activate"; ./setup.py install; ./setup.py develop
 
-RUN /bin/bash -c "which amqcfg"
-
-RUN /bin/bash -c "/usr/local/bin/amqcfg --help"
+RUN /bin/bash -c "/usr/local/bin/yacfg --help"
 
 #CMD "/usr/local/bin/amqcfg --help"
 

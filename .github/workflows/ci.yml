@@ -1,0 +1,33 @@
+name: CI
+
+env:
+  IMAGE_NAME: activemq-artemis-broker-init
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Build the image
+        run: docker build --label quay.expires-after="1w" --tag $IMAGE_NAME:latest .
+
+      - name: Push the image
+        if: ${{ github.event_name == 'push' }}
+        run: >
+          export IMAGE_TAG=dev.$(date +%Y%m%d).$(git rev-parse --short "$GITHUB_SHA") &&
+          docker login quay.io --username=${{ secrets.QUAY_USERNAME }} --password-stdin <<< ${{ secrets.QUAY_PASSWORD }} &&
+          docker tag $IMAGE_NAME:latest quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:$IMAGE_TAG &&
+          docker push quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:$IMAGE_TAG &&
+          docker tag $IMAGE_NAME:latest quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:dev.latest &&
+          docker push quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:dev.latest

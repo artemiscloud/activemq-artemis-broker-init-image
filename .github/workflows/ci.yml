@@ -21,6 +21,9 @@ jobs:
 
       - name: Build the image
         run: docker build --label quay.expires-after="1w" --tag $IMAGE_NAME:latest .
+        
+      - name: Check the image
+        run: docker run $IMAGE_NAME:latest yacfg --profile artemis/2.15.0/default_with_user_address_settings.yaml.jinja2
 
       - name: Push the image
         if: ${{ github.event_name == 'push' }}

@@ -15,4 +15,4 @@ RUN yum install -y rh-python36 rh-python36-python-jinja2
 
 RUN source /opt/rh/rh-python36/enable && ./setup.py install
 
-CMD scl enable rh-python36 bash
+ENV PATH "$PATH:/opt/rh/rh-python36/root/usr/bin"

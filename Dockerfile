@@ -13,6 +13,7 @@ WORKDIR $REMOTE_SOURCE_DIR/app
 
 RUN yum install -y rh-python36 rh-python36-python-jinja2 rh-python36-PyYAML
 
-RUN source /opt/rh/rh-python36/enable && ./setup.py install
+RUN sed -i "s/'pytest-runner'//" setup.py
+RUN source /opt/rh/rh-python36/enable && python setup.py install
 
 ENV PATH "$PATH:/opt/rh/rh-python36/root/usr/bin"

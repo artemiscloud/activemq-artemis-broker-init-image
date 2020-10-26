@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/ubi7/ubi:7.9-193
 
 ### BEGIN REMOTE SOURCE
 ARG REMOTE_SOURCE_DIR=/tmp/remote_source
-ARG REMOTE_SOURCE_REF=019432fad1bbb7c130cb183e3a3799e4f83de33f
+ARG REMOTE_SOURCE_REF=b1be005d7dea5cdc73c10efb77485a424da21eda
 ARG REMOTE_SOURCE_REP=https://github.com/rh-messaging-qe/yacfg.git
 RUN yum install -y git && yum clean all && rm -rf /var/cache/yum
 RUN mkdir -p $REMOTE_SOURCE_DIR/app

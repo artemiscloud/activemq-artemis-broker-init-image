@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi7/ubi:7.9-262
+FROM quay.io/artemiscloud/activemq-artemis-broker-kubernetes:0.2.1
 
 ### BEGIN REMOTE SOURCE
 ARG REMOTE_SOURCE_DIR=/tmp/remote_source

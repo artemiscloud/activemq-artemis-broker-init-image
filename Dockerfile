@@ -1,5 +1,7 @@
 FROM quay.io/artemiscloud/activemq-artemis-broker-kubernetes:0.2.1
 
+USER root
+
 ### BEGIN REMOTE SOURCE
 ARG REMOTE_SOURCE_DIR=/tmp/remote_source
 #ARG REMOTE_SOURCE_REF=e3b95306692725e49f782768404b6c4c70f7f0d2

@@ -15,9 +15,9 @@ RUN cd $REMOTE_SOURCE_DIR/app && git checkout $REMOTE_SOURCE_REF
 ### END REMOTE SOURCE
 WORKDIR $REMOTE_SOURCE_DIR/app
 
-RUN yum install -y rh-python36 rh-python36-python-jinja2 rh-python36-PyYAML && \
+RUN yum install -y rh-python38 rh-python38-python-jinja2 rh-python38-PyYAML && \
     yum clean all && rm -rf /var/cache/yum
 
-RUN source /opt/rh/rh-python36/enable && python setup.py install
+RUN source /opt/rh/rh-python38/enable && python setup.py install
 
-ENV PATH "$PATH:/opt/rh/rh-python36/root/usr/bin"
+ENV PATH "$PATH:/opt/rh/rh-python38/root/usr/bin"

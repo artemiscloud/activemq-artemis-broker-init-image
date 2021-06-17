@@ -6,7 +6,7 @@ ADD script /opt/amq-broker/script
 
 ### BEGIN REMOTE SOURCE
 ARG REMOTE_SOURCE_DIR=/tmp/remote_source
-ARG REMOTE_SOURCE_REF=1ea71f58e7fc8cbe1293715e6743f7c113815ff5
+ARG REMOTE_SOURCE_REF=f3a1e4393d99cc56173c593ed2d0cdfa7c87cd20
 ARG REMOTE_SOURCE_REP=https://github.com/rh-messaging-qe/yacfg.git
 RUN yum install -y git && yum clean all && rm -rf /var/cache/yum
 RUN mkdir -p $REMOTE_SOURCE_DIR/app

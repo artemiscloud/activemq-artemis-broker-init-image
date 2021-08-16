@@ -15,7 +15,7 @@ RUN cd $REMOTE_SOURCE_DIR/app && git checkout $REMOTE_SOURCE_REF
 ### END REMOTE SOURCE
 WORKDIR $REMOTE_SOURCE_DIR/app
 
-RUN yum install -y python38 python38-setuptools python38-jinja2 python38-pyyaml && \
+RUN yum install -y python38 python38-jinja2 python38-pyyaml && \
     yum clean all && rm -rf /var/cache/yum
 
 RUN python3 setup.py install

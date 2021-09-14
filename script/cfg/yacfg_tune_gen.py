@@ -575,6 +575,8 @@ if __name__ == '__main__':
 
     yacfg_context = apply_security.ConfigContext(Path(source_dir).absolute(), Path(target_dir).absolute())
 
+    print("yacfg output dir root: ", Path(source_dir).absolute())
+
     cr_file = os.getenv('SECURITY_CFG_YAML')
 
     with open(cr_file, "r") as file:

@@ -118,7 +118,7 @@ class PropRolesFile:
                 first = True
                 for user in roles[key]:
                     if not first:
-                        dst.write(', ')
+                        dst.write(',')
                     dst.write(user)
                     first = False
                 dst.write('\n')

@@ -1,4 +1,4 @@
-FROM quay.io/artemiscloud/activemq-artemis-broker-kubernetes:0.2.7
+FROM quay.io/artemiscloud/activemq-artemis-broker-kubernetes:0.2.9
 
 USER root
 

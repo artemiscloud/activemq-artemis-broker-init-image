@@ -1,0 +1,67 @@
+name: Update
+
+env:
+  IMAGE_NAME: activemq-artemis-broker-kubernetes
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version, i.e. 1.0.0'
+        required: false
+        default: ''
+        type: string
+      base_image:
+        description: 'Base image'
+        required: false
+        default: 'latest'
+        type: string
+      yacfg_version:
+        description: 'YAML Configurator Version, i.e. v0.9.3'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Set up the repo
+        run: |
+          git config user.name 'ArtemisCloud Bot'
+          git config user.email 'artemiscloudbot@users.noreply.github.com'
+          git push
+
+      - name: Update version
+        if: ${{ github.event.inputs.version != '' }}
+        run: |
+          sed -i "s~^LABEL version=.*~LABEL version=\"${{ github.event.inputs.version }}\"~g" Dockerfile
+          git commit --all --message "Update version to ${{ github.event.inputs.version }}" || echo "nothing to commit"
+
+      - name: Update base image
+        if: ${{ github.event.inputs.base_image != '' }}
+        run: |
+          if [ "${{ github.event.inputs.base_image }}" = "latest" ]; then
+            BASE_IMAGE="quay.io/artemiscloud/activemq-artemis-broker-kubernetes:$(skopeo inspect docker://quay.io/artemiscloud/activemq-artemis-broker-kubernetes:latest | jq -r '.RepoTags[-2]')"
+          else
+            BASE_IMAGE="${{ github.event.inputs.base_image }}"
+          fi
+          sed -i "s~FROM.*~FROM ${BASE_IMAGE}~g" Dockerfile
+          git commit --all --message "Update base image to ${BASE_IMAGE}" || echo "nothing to commit"
+
+      - name: Update YAML Configurator
+        if: ${{ github.event.inputs.yacfg_version != '' }}
+        run: |
+          YACFG_VER='${{ github.event.inputs.yacfg_version }}'
+          YACFG_REP='https://github.com/rh-messaging-qe/yacfg.git'
+          YACFG_REF=$(git ls-remote --tags ${YACFG_REP} | grep -oP ".*(?=refs/tags/${YACFG_VER}\$)" | tr -d '[:blank:]')
+          sed -i -e "s~ARG REMOTE_SOURCE_REF=.*~ARG REMOTE_SOURCE_REF=${YACFG_REF}~" -e "s~ARG REMOTE_SOURCE_REP=.*~ARG REMOTE_SOURCE_REP=${YACFG_REP}~" Dockerfile
+          git commit --all --message "Update YAML Configurator to ${YACFG_VER}" || echo "nothing to commit"
+
+      - name: Push commits
+        run: |
+          git push

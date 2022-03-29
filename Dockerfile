@@ -21,3 +21,8 @@ RUN microdnf install -y python38 python38-jinja2 python38-pyyaml && \
     microdnf clean all && rm -rf /var/cache/yum
 
 RUN python3 setup.py install
+
+LABEL name="artemiscloud/activemq-artemis-broker-init"
+LABEL description="ActiveMQ Artemis broker init container image"
+LABEL maintainer="Howard Gao <hgao@redhat.com>"
+LABEL version="1.0.0"

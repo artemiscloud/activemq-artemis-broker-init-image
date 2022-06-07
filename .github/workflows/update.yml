@@ -57,7 +57,7 @@ jobs:
         if: ${{ github.event.inputs.yacfg_version != '' }}
         run: |
           YACFG_VER='${{ github.event.inputs.yacfg_version }}'
-          YACFG_REP='https://github.com/rh-messaging-qe/yacfg.git'
+          YACFG_REP='https://github.com/artemiscloud/yacfg.git'
           YACFG_REF=$(git ls-remote --tags ${YACFG_REP} | grep -oP ".*(?=refs/tags/${YACFG_VER}\$)" | tr -d '[:blank:]')
           sed -i -e "s~ARG REMOTE_SOURCE_REF=.*~ARG REMOTE_SOURCE_REF=${YACFG_REF}~" -e "s~ARG REMOTE_SOURCE_REP=.*~ARG REMOTE_SOURCE_REP=${YACFG_REP}~" Dockerfile
           git commit --all --message "Update YAML Configurator to ${YACFG_VER}" || echo "nothing to commit"

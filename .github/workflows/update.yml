@@ -58,9 +58,20 @@ jobs:
         run: |
           YACFG_VER='${{ github.event.inputs.yacfg_version }}'
           YACFG_REP='https://github.com/artemiscloud/yacfg.git'
-          #https://stackoverflow.com/questions/1862423/how-to-tell-which-commit-a-tag-points-to-in-git
-          YACFG_REF=$(git rev-list -n 1 ${YACFG_VER})
-          # YACFG_REF=$(git ls-remote --tags ${YACFG_REP} | grep -oP ".*(?=refs/tags/${YACFG_VER}\$)" | tr -d '[:blank:]')
+
+          YACFG_REF=$(git ls-remote --tags ${YACFG_REP} | grep -oP ".*(?=refs/tags/${YACFG_VER}\^\{\}\$)" | tr -d '[:blank:]')
+          if [[ $YACFG_REF != "" ]]; then
+            echo "found annotated tag"
+          else
+            YACFG_REF=$(git ls-remote --tags ${YACFG_REP} | grep -oP ".*(?=refs/tags/${YACFG_VER}\$)" | tr -d '[:blank:]')
+            if [[ $YACFG_REF == "" ]]; then
+              echo "tag ${YACFG_VER} not found!"
+              exit 1
+            fi
+          fi
+
+          echo "found tag $YACFG_VER point to commit ref $YACFG_REF}"
+
           sed -i -e "s~ARG REMOTE_SOURCE_REF=.*~ARG REMOTE_SOURCE_REF=${YACFG_REF}~" -e "s~ARG REMOTE_SOURCE_REP=.*~ARG REMOTE_SOURCE_REP=${YACFG_REP}~" Dockerfile
           git commit --all --message "Update YAML Configurator to ${YACFG_VER}" || echo "nothing to commit"
 

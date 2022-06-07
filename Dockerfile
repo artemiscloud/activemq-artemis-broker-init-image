@@ -6,8 +6,8 @@ ADD script /opt/amq-broker/script
 
 ### BEGIN REMOTE SOURCE
 ARG REMOTE_SOURCE_DIR=/tmp/remote_source
-ARG REMOTE_SOURCE_REF=
-ARG REMOTE_SOURCE_REP=https://github.com/rh-messaging-qe/yacfg.git
+ARG REMOTE_SOURCE_REF=1529ae8c3acfe4973de565ff5e8bb92e5e0ba017
+ARG REMOTE_SOURCE_REP=https://github.com/artemiscloud/yacfg.git
 RUN microdnf install -y git && microdnf clean all && rm -rf /var/cache/yum
 RUN mkdir -p $REMOTE_SOURCE_DIR/app
 RUN git clone $REMOTE_SOURCE_REP $REMOTE_SOURCE_DIR/app

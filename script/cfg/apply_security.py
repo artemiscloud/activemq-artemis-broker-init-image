@@ -3,6 +3,8 @@ from pathlib import Path
 from io import StringIO
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
+import os
+import subprocess
 import re
 import yaml
 
@@ -60,14 +62,14 @@ class PropUsersFile:
                     ulist = line.split('=')
                     user = ulist[0].strip()
                     password = ulist[1].strip()
-                    users[user] = password
+                    users[user] = self.encrypt_password(password)
         with open(new_file.prop_file, 'rt') as src_user_file:
             for line in src_user_file:
                 if not line.startswith('#') and line and line.strip():
                     ulist = line.split('=')
                     user = ulist[0].strip()
                     password = ulist[1].strip()
-                    users[user] = password
+                    users[user] = self.encrypt_password(password)
         with open(self.prop_file, 'wt') as dst:
             dst.writelines(comments)
             for key in users:
@@ -75,6 +77,20 @@ class PropUsersFile:
                 dst.write(' = ')
                 dst.write(users[key])
                 dst.write('\n')
+
+    def encrypt_password(self, password):
+        if not password.startswith('ENC('):
+            process = subprocess.run([os.path.join(os.path.dirname(os.path.dirname(self.prop_file)), 'bin', 'artemis'), 'mask', '--hash', password],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+
+            result = process.stdout.strip();
+
+            if result.startswith('result: '):
+                return 'ENC(' + result.replace('result: ', '') + ')'
+            else:
+                print('Error on encrypting a password: ' + result + '/' + process.stderr.strip())
+
+        return password
 
 
 class PropRolesFile:

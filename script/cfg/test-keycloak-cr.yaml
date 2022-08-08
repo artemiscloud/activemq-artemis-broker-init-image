@@ -1,0 +1,262 @@
+typemeta:
+  kind: ActiveMQArtemisSecurity
+  apiversion: broker.amq.io/v1beta1
+objectmeta:
+  name:
+  generatename:
+  namespace:
+  selflink:
+  uid:
+  resourceversion:
+  generation: 0
+  creationtimestamp: 0001-01-01T00:00:00Z
+  deletiontimestamp: null
+  deletiongraceperiodseconds: null
+  labels: {}
+  annotations: {}
+  ownerreferences: []
+  finalizers: []
+  clustername:
+  managedfields: []
+spec:
+  loginmodules:
+    propertiesloginmodules:
+    - name: internal
+      users:
+      - name: superman
+        password: ihavepower
+        roles:
+        - root
+    guestloginmodules: []
+    keycloakloginmodules:
+    - name: keycloak-broker
+      moduletype: directAccess
+      configuration:
+        realm: artemis-keycloak-demo
+        realmpublickey: null
+        authserverurl: http://10.109.131.209:8080/auth
+        sslrequired: external
+        resource: artemis-broker
+        publicclient: null
+        credentials:
+        - key: secret
+          value: 9699685c-8a30-45cf-bf19-0d38bbac5fdc
+        useresourcerolemappings: true
+        enablecors: null
+        corsmaxage: null
+        corsallowedmethods: null
+        corsallowedheaders: null
+        corsexposedheaders: null
+        exposetoken: null
+        beareronly: null
+        autodetectbeareronly: null
+        connectionpoolsize: null
+        allowanyhostname: null
+        disabletrustmanager: null
+        truststore: null
+        truststorepassword: null
+        clientkeystore: null
+        clientkeystorepassword: null
+        clientkeypassword: null
+        alwaysrefreshtoken: null
+        registernodeatstartup: null
+        registernodeperiod: null
+        tokenstore: null
+        tokencookiepath: null
+        principalattribute: preferred_username
+        proxyurl: null
+        turnoffchangesessionidonlogin: null
+        tokenminimumtimetolive: null
+        mintimebetweenjwksrequests: null
+        publickeycachettl: null
+        ignoreoauthqueryparameter: null
+        verifytokenaudience: null
+        enablebasicauth: null
+        confidentialport: null
+        redirectrewriterules: []
+        scope: null
+    - name: keycloak-console
+      moduletype: bearerToken
+      configuration:
+        realm: artemis-keycloak-demo
+        realmpublickey: null
+        authserverurl: http://keycloak.3387.com/auth
+        sslrequired: external
+        resource: artemis-console
+        publicclient: null
+        credentials: []
+        useresourcerolemappings: true
+        enablecors: null
+        corsmaxage: null
+        corsallowedmethods: null
+        corsallowedheaders: null
+        corsexposedheaders: null
+        exposetoken: null
+        beareronly: null
+        autodetectbeareronly: null
+        connectionpoolsize: null
+        allowanyhostname: null
+        disabletrustmanager: null
+        truststore: null
+        truststorepassword: null
+        clientkeystore: null
+        clientkeystorepassword: null
+        clientkeypassword: null
+        alwaysrefreshtoken: null
+        registernodeatstartup: null
+        registernodeperiod: null
+        tokenstore: null
+        tokencookiepath: null
+        principalattribute: preferred_username
+        proxyurl: null
+        turnoffchangesessionidonlogin: null
+        tokenminimumtimetolive: null
+        mintimebetweenjwksrequests: null
+        publickeycachettl: null
+        ignoreoauthqueryparameter: null
+        verifytokenaudience: null
+        enablebasicauth: null
+        confidentialport: 0
+        redirectrewriterules: []
+        scope: null
+  securitydomains:
+    brokerdomain:
+      name: activemq
+      loginmodules:
+      - name: internal
+        flag: sufficient
+        debug: null
+        reload: null
+      - name: keycloak-broker
+        flag: required
+        debug: true
+        reload: true
+    consoledomain:
+      name: console
+      loginmodules:
+      - name: keycloak-console
+        flag: required
+        debug: null
+        reload: null
+  securitysettings:
+    broker:
+    - match: Info
+      permissions:
+      - operationtype: createDurableQueue
+        roles:
+        - amq
+      - operationtype: deleteDurableQueue
+        roles:
+        - amq
+      - operationtype: createNonDurableQueue
+        roles:
+        - amq
+      - operationtype: deleteNonDurableQueue
+        roles:
+        - amq
+      - operationtype: send
+        roles:
+        - guest
+      - operationtype: consume
+        roles:
+        - amq
+    - match: '#'
+      permissions:
+      - operationtype: createDurableQueue
+        roles:
+        - root
+      - operationtype: deleteDurableQueue
+        roles:
+        - root
+      - operationtype: createNonDurableQueue
+        roles:
+        - root
+      - operationtype: deleteNonDurableQueue
+        roles:
+        - root
+      - operationtype: createTempQueue
+        roles:
+        - root
+      - operationtype: deleteTempQueue
+        roles:
+        - root
+      - operationtype: send
+        roles:
+        - root
+      - operationtype: consume
+        roles:
+        - root
+      - operationtype: manage
+        roles:
+        - root
+      - operationtype: browse
+        roles:
+        - root
+      - operationtype: createAddress
+        roles:
+        - root
+      - operationtype: deleteAddress
+        roles:
+        - root
+    management:
+      hawtioroles:
+      - guest
+      connector:
+        host: null
+        port: null
+        rmiregistryport: null
+        jmxrealm: null
+        objectname: null
+        authenticatortype: null
+        secured: null
+        keystoreprovider: null
+        keystorepath: null
+        keystorepassword: null
+        truststoreprovider: null
+        truststorepath: null
+        truststorepassword: null
+        passwordcodec: null
+      authorisation:
+        allowedlist: []
+        defaultaccess: []
+        roleaccess:
+        - domain: org.apache.activemq.artemis
+          key: null
+          accesslist:
+          - method: list*
+            roles:
+            - amq
+            - guest
+            - root
+          - method: get*
+            roles:
+            - amq
+            - guest
+            - root
+          - method: is*
+            roles:
+            - amq
+            - guest
+            - root
+          - method: set*
+            roles:
+            - amq
+            - guest
+            - root
+          - method: browse*
+            roles:
+            - amq
+            - guest
+            - root
+          - method: count*
+            roles:
+            - amq
+            - guest
+            - root
+          - method: '*'
+            roles:
+            - amq
+            - guest
+            - root
+  applytocrnames: []
+status: {}

@@ -1,0 +1,154 @@
+typemeta:
+  kind: ActiveMQArtemisSecurity
+  apiversion: broker.amq.io/v1beta1
+objectmeta:
+  name:
+  generatename:
+  namespace:
+  selflink:
+  uid:
+  resourceversion:
+  generation: 0
+  creationtimestamp: 0001-01-01T00:00:00Z
+  deletiontimestamp: null
+  deletiongraceperiodseconds: null
+  labels: {}
+  annotations: {}
+  ownerreferences: []
+  finalizers: []
+  clustername:
+  managedfields: []
+spec:
+  loginmodules:
+    propertiesloginmodules:
+    - name: prop-module
+      users:
+      - name: superman
+        password: K8ztI74A
+        roles:
+        - root
+      - name: howard
+        password: oFwewDRL
+        roles:
+        - viewer
+        - guest
+    guestloginmodules:
+    - name: guest-module
+      guestuser: myguest
+      guestrole: guest
+    keycloakloginmodules: []
+  securitydomains:
+    brokerdomain:
+      name: activemq
+      loginmodules:
+      - name: prop-module
+        flag: sufficient
+        debug: null
+        reload: null
+      - name: guest-module
+        flag: sufficient
+        debug: null
+        reload: null
+    consoledomain:
+      name: null
+      loginmodules: []
+  securitysettings:
+    broker:
+    - match: '#'
+      permissions:
+      - operationtype: createDurableQueue
+        roles:
+        - root
+      - operationtype: deleteDurableQueue
+        roles:
+        - root
+      - operationtype: createNonDurableQueue
+        roles:
+        - root
+      - operationtype: deleteNonDurableQueue
+        roles:
+        - root
+      - operationtype: createTempQueue
+        roles:
+        - root
+      - operationtype: deleteTempQueue
+        roles:
+        - root
+      - operationtype: send
+        roles:
+        - root
+      - operationtype: consume
+        roles:
+        - root
+      - operationtype: manage
+        roles:
+        - root
+      - operationtype: browse
+        roles:
+        - root
+      - operationtype: createAddress
+        roles:
+        - root
+      - operationtype: deleteAddress
+        roles:
+        - root
+    management:
+      hawtioroles:
+      - guest,root
+      connector:
+        host: null
+        port: null
+        rmiregistryport: null
+        jmxrealm: null
+        objectname: null
+        authenticatortype: null
+        secured: null
+        keystoreprovider: null
+        keystorepath: null
+        keystorepassword: null
+        truststoreprovider: null
+        truststorepath: null
+        truststorepassword: null
+        passwordcodec: null
+      authorisation:
+        allowedlist:
+        - domain: hawtio
+          key: null
+        defaultaccess:
+        - method: list*
+          roles:
+          - root
+          - amq
+        - method: set*
+          roles:
+          - root
+        roleaccess:
+        - domain: org.apache.activemq.artemis
+          key: null
+          accesslist:
+          - method: list*
+            roles:
+            - root
+          - method: get*
+            roles:
+            - guest
+            - root
+          - method: is*
+            roles:
+            - guest
+            - root
+          - method: browse*
+            roles:
+            - root
+          - method: set*
+            roles:
+            - root
+          - method: count*
+            roles:
+            - guest
+            - root
+          - method: '*'
+            roles:
+            - root
+  applytocrnames: []
+status: {}

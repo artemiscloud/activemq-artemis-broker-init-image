@@ -8,6 +8,9 @@
 # YACFG_PROFILE_VERSION - the profile version
 
 echo "Configuring security from CR ${SECURITY_CFG_YAML}"
+echo "======== raw security cr(debug only, don't merge) =========="
+cat ${SECURITY_CFG_YAML}
+echo "======== end of raw security ========="
 echo "yacfg name: ${YACFG_PROFILE_NAME}"
 echo "yacfg version: ${YACFG_PROFILE_VERSION}"
 

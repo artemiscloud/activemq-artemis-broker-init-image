@@ -176,6 +176,20 @@ class TestSecurityConfiguration(unittest.TestCase):
         wanted = "WARNING: user bob doesn't have any roles defined!"
         self.assertTrue(wanted in contents)
 
+    def test_warnings_on_login_module_not_used(self):
+        self.context.parse_config_cr("./test-login-module-not-used-cr.yaml")
+        captured_output = io.StringIO()
+        current_stdout = sys.stdout
+        sys.stdout = captured_output
+        self.context.apply()
+        sys.stdout = current_stdout
+        contents = captured_output.getvalue()
+        wanted1 = "WARNING: Login module defined but not used!"
+        wanted2 = "Defined module: prop-module"
+        print(contents)
+        self.assertTrue(wanted1 in contents)
+        self.assertTrue(wanted2 in contents)
+
 
 if __name__ == '__main__':
     unittest.main()

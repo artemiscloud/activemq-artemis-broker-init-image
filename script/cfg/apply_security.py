@@ -577,6 +577,9 @@ class SecurityDomain:
                     all_modules.append(dm)
         return all_modules
 
+    def is_empty(self):
+        return len(self.login_modules) == 0
+
     def configure(self, config_context):
         pass
 
@@ -1048,6 +1051,10 @@ class ConfigContext:
             self.broker_domain.configure(self)
         if self.console_domain:
             self.console_domain.configure(self)
+        if len(self.login_modules) > 0 and (self.broker_domain is None or self.broker_domain.is_empty()) and (self.console_domain is None or self.console_domain.is_empty()):
+            print("WARNING: Login module defined but not used!")
+            for lm in self.login_modules:
+                print("Defined module:", lm)
 
     def apply_broker_security(self):
         print("Applying broker security settings")

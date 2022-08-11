@@ -1,9 +1,7 @@
-from shutil import copyfile
 from pathlib import Path
 from io import StringIO
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
-import os
 import subprocess
 import re
 import yaml
@@ -118,6 +116,8 @@ class PropRolesFile:
                         user_set[u.strip()] = u.strip()
                     roles[role] = user_set
         for each_user in new_users:
+            if len(each_user['roles']) == 0:
+                print("WARNING: user", each_user['name'], "doesn't have any roles defined!")
             for r in each_user['roles']:
                 if r in roles:
                     existing_user_set = roles[r]

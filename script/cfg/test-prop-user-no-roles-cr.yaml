@@ -1,0 +1,66 @@
+typemeta:
+  kind: ActiveMQArtemisSecurity
+  apiversion: broker.amq.io/v1beta1
+objectmeta:
+  name:
+  generatename:
+  namespace:
+  selflink:
+  uid:
+  resourceversion:
+  generation: 0
+  creationtimestamp: 0001-01-01T00:00:00Z
+  deletiontimestamp: null
+  deletiongraceperiodseconds: null
+  labels: {}
+  annotations: {}
+  ownerreferences: []
+  finalizers: []
+  clustername:
+  managedfields: []
+spec:
+  loginmodules:
+    propertiesloginmodules:
+    - name: prop-module
+      users:
+      - name: bob
+        password: mysecret
+        roles: []
+    guestloginmodules: []
+    keycloakloginmodules: []
+  securitydomains:
+    brokerdomain:
+      name: activemq
+      loginmodules:
+      - name: prop-module
+        flag: required
+        debug: null
+        reload: null
+    consoledomain:
+      name: null
+      loginmodules: []
+  securitysettings:
+    broker: []
+    management:
+      hawtioroles: []
+      connector:
+        host: null
+        port: null
+        rmiregistryport: null
+        jmxrealm: null
+        objectname: null
+        authenticatortype: null
+        secured: null
+        keystoreprovider: null
+        keystorepath: null
+        keystorepassword: null
+        truststoreprovider: null
+        truststorepath: null
+        truststorepassword: null
+        passwordcodec: null
+      authorisation:
+        allowedlist: []
+        defaultaccess: []
+        roleaccess: []
+  applytocrnames: []
+status: {}

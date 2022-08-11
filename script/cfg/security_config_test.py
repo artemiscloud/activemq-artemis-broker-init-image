@@ -1,10 +1,12 @@
 import shutil
+import sys
 import unittest
 import os
 import apply_security
 import random
 import string
 import security_configuration_checker as checker
+import io
 
 
 def random_str(length):
@@ -162,6 +164,17 @@ class TestSecurityConfiguration(unittest.TestCase):
                                                          '  "principal-attribute": "preferred_username",',
                                                          '  "confidential-port": 0',
                                                          '}']))
+
+    def test_warnings_on_users_without_roles(self):
+        self.context.parse_config_cr("./test-prop-user-no-roles-cr.yaml")
+        captured_output = io.StringIO()
+        current_stdout = sys.stdout
+        sys.stdout = captured_output
+        self.context.apply()
+        sys.stdout = current_stdout
+        contents = captured_output.getvalue()
+        wanted = "WARNING: user bob doesn't have any roles defined!"
+        self.assertTrue(wanted in contents)
 
 
 if __name__ == '__main__':

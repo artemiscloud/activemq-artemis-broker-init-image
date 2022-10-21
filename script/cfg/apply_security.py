@@ -239,6 +239,88 @@ class GuestLoginModule(LoginModule):
         return [[key_guest_user, guest_user], [key_guest_role, guest_role]]
 
 
+class LDAPLoginModule(LoginModule):
+    def __init__(self, name, module1):
+        LoginModule.__init__(self, name)
+        self.module = module1
+
+    def get_class_name(self):
+        return 'org.apache.activemq.artemis.spi.core.security.jaas.LDAPLoginModule'
+
+    def get_properties(self):
+        props = [
+            ['initialContextFactory', self.module['initialcontextfactory'] or 'com.sun.jndi.ldap.LdapCtxFactory'],
+            ['connectionURL', self.module['connectionurl']],
+            ['authentication', self.module['authentication'] or 'simple'],
+            ['connectionUsername', self.module['connectionusername']],
+            ['connectionPassword', self.module['connectionpassword']],
+            ['connectionProtocol', self.module['connectionprotocol'] or 's'],
+            ['userBase', self.module['userbase']],
+            ['userSearchMatching', self.module['usersearchmatching']],
+            ['userSearchSubtree', self.module['usersearchsubtree'] or 'false'],
+            ['roleBase', self.module['rolebase']],
+            ['roleSearchMatching', self.module['rolesearchmatching']],
+            ['roleSearchSubtree', self.module['rolesearchsubtree'] or 'false']
+        ]
+
+        if 'saslloginconfigscope' in self.module:
+            sasl_login_config_scope = self.module['saslloginconfigscope']
+            if sasl_login_config_scope is not None:
+                props.append(["saslLoginConfigScope", sasl_login_config_scope])
+
+        if 'connectionpool' in self.module:
+            connection_pool = self.module['connectionpool']
+            if connection_pool is not None:
+                props.append(["connectionPool", connection_pool])
+
+        if 'connectiontimeout' in self.module:
+            connection_timeout = self.module['connectiontimeout']
+            if connection_timeout is not None:
+                props.append(["connectionTimeout", connection_timeout])
+
+        if 'readtimeout' in self.module:
+            read_timeout = self.module['readtimeout']
+            if read_timeout is not None:
+                props.append(["readTimeout", read_timeout])
+
+        if 'userrolename' in self.module:
+            user_role_name = self.module['userrolename']
+            if user_role_name is not None:
+                props.append(["userRoleName", user_role_name])
+
+        if 'rolename' in self.module:
+            role_name = self.module['rolename']
+            if role_name is not None:
+                props.append(["roleName", role_name])
+
+        if 'authenticateuser' in self.module:
+            authenticate_user = self.module['authenticateuser']
+            if authenticate_user is not None:
+                props.append(["authenticateUser", authenticate_user])
+
+        if 'referral' in self.module:
+            referral = self.module['referral']
+            if referral is not None:
+                props.append(["referral", referral])
+
+        if 'ignorepartialresultexception' in self.module:
+            ignore_partial_result_exception = self.module['ignorepartialresultexception']
+            if ignore_partial_result_exception is not None:
+                props.append(["ignorePartialResultException", ignore_partial_result_exception])
+
+        if 'expandroles' in self.module:
+            expand_roles = self.module['expandroles']
+            if expand_roles is not None:
+                props.append(["expandRoles", expand_roles])
+
+        if 'expandrolesmatching' in self.module:
+            expand_roles_matching = self.module['expandrolesmatching']
+            if expand_roles_matching is not None:
+                props.append(["expandRolesMatching", expand_roles_matching])
+
+        return props
+
+
 class CopyKeycloakDependencies(ExtraResource):
     def create(self, dest_dir):
         # for upstream may download
@@ -1091,6 +1173,10 @@ class ConfigContext:
             guestloginmodules = self.security_cr['spec']['loginmodules']['guestloginmodules']
             for module in guestloginmodules:
                 self.add_login_module(GuestLoginModule(module['name'], module))
+
+            ldaploginmodules = self.security_cr['spec']['loginmodules']['ldaploginmodules']
+            for module in ldaploginmodules:
+                self.add_login_module(LDAPLoginModule(module['name'], module))
 
             keycloakloginmodules = self.security_cr['spec']['loginmodules']["keycloakloginmodules"]
             for module in keycloakloginmodules:

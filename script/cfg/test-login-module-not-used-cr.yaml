@@ -29,6 +29,7 @@ spec:
         - root
     guestloginmodules: []
     keycloakloginmodules: []
+    ldaploginmodules: []
   securitydomains:
     brokerdomain:
       name: null

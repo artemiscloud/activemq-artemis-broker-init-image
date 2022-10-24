@@ -28,6 +28,7 @@ spec:
         roles: []
     guestloginmodules: []
     keycloakloginmodules: []
+    ldaploginmodules: []
   securitydomains:
     brokerdomain:
       name: activemq

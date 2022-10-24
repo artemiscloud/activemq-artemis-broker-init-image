@@ -37,6 +37,7 @@ spec:
       guestuser: myguest
       guestrole: guest
     keycloakloginmodules: []
+    ldaploginmodules: []
   securitydomains:
     brokerdomain:
       name: activemq

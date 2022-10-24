@@ -559,10 +559,22 @@ class JaasLoginConfig:
                         else:
                             login_config_stream.write("       reload=false\n")
                     i = 0
-                    size = len(m.get_properties())
-                    for prop in m.get_properties():
+                    props = m.get_properties() # call properties only once
+                    size = len(props)
+                    for prop in props:
                         i += 1
-                        login_config_stream.write("       " + prop[0] + '="' + str(prop[1]) + '"')
+                        if prop[1] is True:
+                            propstr = 'true'
+                        elif prop[1] is False:
+                            propstr = 'false'
+                        else:
+                            propstr = str(prop[1])
+
+                        if (re.match("^[0-9]*$", propstr) or propstr == 'true' or propstr == 'false'):
+                            login_config_stream.write("       " + prop[0] + '=' + propstr)
+                        else:
+                            login_config_stream.write("       " + prop[0] + '="' + propstr + '"')
+
                         if i == size:
                             # last one
                             login_config_stream.write(";\n\n")
@@ -608,7 +620,9 @@ class JaasLoginConfig:
                             current_domain.add_login_module(current_module)
                         else:
                             # properties
-                            prop_pair = each_line.strip().split('=')
+                            p = re.compile('^([^"]*)="?(.*)"?')
+                            m = p.match(each_line.strip())
+                            prop_pair = [m.group(1), m.group(2)]
                             if prop_pair[0] == 'debug':
                                 current_module.set_debug(bool(prop_pair[1]))
                             elif prop_pair[0] == 'reload':
@@ -694,6 +708,7 @@ class ConsoleDomain(SecurityDomain):
         SecurityDomain.__init__(self, domain, domain_type, context)
 
     def configure(self, config_context):
+        print("configuring console domain", self.get_name())
         login_config = JaasLoginConfig(config_context.get_login_config_file())
         login_config.update_console_domain(self, config_context)
         for lm in self.login_modules:
@@ -1144,6 +1159,7 @@ class ConfigContext:
             self.broker_security_settings.configure(self)
 
     def apply_management(self):
+        print("Applying management settings")
         if self.management_setting:
             self.management_setting.configure(self)
 

@@ -1,0 +1,212 @@
+typemeta:
+  kind: ActiveMQArtemisSecurity
+  apiversion: broker.amq.io/v1beta1
+objectmeta:
+  name:
+  generatename:
+  namespace:
+  selflink:
+  uid:
+  resourceversion:
+  generation: 0
+  creationtimestamp: 0001-01-01T00:00:00Z
+  deletiontimestamp: null
+  deletiongraceperiodseconds: null
+  labels: {}
+  annotations: {}
+  ownerreferences: []
+  finalizers: []
+  clustername:
+  managedfields: []
+spec:
+  loginmodules:
+    propertiesloginmodules:
+    - name: internal
+      users:
+      - name: superman
+        password: ihavepower
+        roles:
+        - root
+    guestloginmodules: []
+    keycloakloginmodules: []
+    ldaploginmodules:
+    - name: ldap-broker
+      initialcontextfactory: com.sun.jndi.ldap.LdapCtxFactory
+      connectionurl: ldap://localhost:1389
+      authentication: simple
+      connectionusername: uid=test,dc=example,dc=com
+      connectionpassword: password
+      saslloginconfigscope: null
+      connectionprotocol: s
+      connectionpool: true
+      connectiontimeout: null
+      readtimeout: null
+      userbase: dc=users,dc=example,dc=com
+      usersearchmatching: (uid={0})
+      usersearchsubtree: false
+      userrolename: null
+      rolebase: dc=groups,dc=example,dc=com
+      rolename: cn
+      rolesearchmatching: (member=uid={1},dc=users,dc=example,dc=com)
+      rolesearchsubtree: false
+      authenticateuser: null
+      referral: null
+      ignorepartialresultexception: null
+      expandroles: null
+      expandrolesmatching: null
+    - name: ldap-console
+      initialcontextfactory: com.sun.jndi.ldap.LdapCtxFactory
+      connectionurl: ldap://localhost:1389
+      authentication: simple
+      connectionusername: uid=test,dc=example,dc=com
+      connectionpassword: password
+      saslloginconfigscope: null
+      connectionprotocol: s
+      connectionpool: true
+      connectiontimeout: null
+      readtimeout: null
+      userbase: dc=operators,dc=example,dc=com
+      usersearchmatching: (uid={0})
+      usersearchsubtree: false
+      userrolename: null
+      rolebase: dc=groups,dc=example,dc=com
+      rolename: cn
+      rolesearchmatching: (member=uid={1},dc=operators,dc=example,dc=com)
+      rolesearchsubtree: false
+      authenticateuser: null
+      referral: null
+      ignorepartialresultexception: null
+      expandroles: null
+      expandrolesmatching: null
+  securitydomains:
+    brokerdomain:
+      name: activemq
+      loginmodules:
+      - name: internal
+        flag: sufficient
+        debug: null
+        reload: null
+      - name: ldap-broker
+        flag: required
+        debug: true
+        reload: true
+    consoledomain:
+      name: console
+      loginmodules:
+      - name: ldap-console
+        flag: required
+        debug: null
+        reload: null
+  securitysettings:
+    broker:
+    - match: Info
+      permissions:
+      - operationtype: createDurableQueue
+        roles:
+        - amq
+      - operationtype: deleteDurableQueue
+        roles:
+        - amq
+      - operationtype: createNonDurableQueue
+        roles:
+        - amq
+      - operationtype: deleteNonDurableQueue
+        roles:
+        - amq
+      - operationtype: send
+        roles:
+        - guest
+      - operationtype: consume
+        roles:
+        - amq
+    - match: '#'
+      permissions:
+      - operationtype: createDurableQueue
+        roles:
+        - root
+      - operationtype: deleteDurableQueue
+        roles:
+        - root
+      - operationtype: createNonDurableQueue
+        roles:
+        - root
+      - operationtype: deleteNonDurableQueue
+        roles:
+        - root
+      - operationtype: createTempQueue
+        roles:
+        - root
+      - operationtype: deleteTempQueue
+        roles:
+        - root
+      - operationtype: send
+        roles:
+        - root
+      - operationtype: consume
+        roles:
+        - root
+      - operationtype: manage
+        roles:
+        - root
+      - operationtype: browse
+        roles:
+        - root
+      - operationtype: createAddress
+        roles:
+        - root
+      - operationtype: deleteAddress
+        roles:
+        - root
+    management:
+      hawtioroles:
+      - operator
+      - reporter
+      connector:
+        host: null
+        port: null
+        rmiregistryport: null
+        jmxrealm: null
+        objectname: null
+        authenticatortype: null
+        secured: null
+        keystoreprovider: null
+        keystorepath: null
+        keystorepassword: null
+        truststoreprovider: null
+        truststorepath: null
+        truststorepassword: null
+        passwordcodec: null
+      authorisation:
+        allowedlist: []
+        defaultaccess: []
+        roleaccess:
+        - domain: org.apache.activemq.artemis
+          key: null
+          accesslist:
+          - method: list*
+            roles:
+            - operator
+            - reporter
+          - method: get*
+            roles:
+            - operator
+            - reporter
+          - method: is*
+            roles:
+            - operator
+            - reporter
+          - method: set*
+            roles:
+            - operator
+          - method: browse*
+            roles:
+            - operator
+          - method: count*
+            roles:
+            - operator
+            - reporter
+          - method: '*'
+            roles:
+            - operator
+  applytocrnames: []
+status: {}

@@ -35,6 +35,7 @@ spec:
         - role1
     guestloginmodules: []
     keycloakloginmodules: []
+    ldaploginmodules: []
   securitydomains:
     brokerdomain:
       name: activemqx

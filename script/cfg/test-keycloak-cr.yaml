@@ -119,6 +119,7 @@ spec:
         confidentialport: 0
         redirectrewriterules: []
         scope: null
+    ldaploginmodules: []
   securitydomains:
     brokerdomain:
       name: activemq

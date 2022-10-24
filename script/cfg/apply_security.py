@@ -562,7 +562,7 @@ class JaasLoginConfig:
                     size = len(m.get_properties())
                     for prop in m.get_properties():
                         i += 1
-                        login_config_stream.write("       " + prop[0] + '="' + prop[1] + '"')
+                        login_config_stream.write("       " + prop[0] + '="' + str(prop[1]) + '"')
                         if i == size:
                             # last one
                             login_config_stream.write(";\n\n")

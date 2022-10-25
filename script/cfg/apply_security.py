@@ -570,10 +570,7 @@ class JaasLoginConfig:
                         else:
                             propstr = str(prop[1])
 
-                        if (re.match("^[0-9]*$", propstr) or propstr == 'true' or propstr == 'false'):
-                            login_config_stream.write("       " + prop[0] + '=' + propstr)
-                        else:
-                            login_config_stream.write("       " + prop[0] + '="' + propstr + '"')
+                        login_config_stream.write("       " + prop[0] + '="' + propstr + '"')
 
                         if i == size:
                             # last one

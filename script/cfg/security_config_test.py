@@ -197,6 +197,7 @@ class TestSecurityConfiguration(unittest.TestCase):
                                                                        'createAddress': 'root',
                                                                        'deleteAddress': 'root'}))
         self.assertTrue(the_checker.has_hawtio_roles('"operator,reporter"'))
+        self.assertTrue(the_checker.artemis_profile_has_line('JAVA_ARGS="${JAVA_ARGS} -Dhawtio.authenticationEnabled=true -Dhawtio.realm=console"'))
         self.assertTrue(the_checker.management_has_access_list([{'domain': 'org.apache.activemq.artemis',
                                                                  'key': None,
                                                                  'list': [

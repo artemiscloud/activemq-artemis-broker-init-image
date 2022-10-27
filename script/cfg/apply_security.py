@@ -320,6 +320,10 @@ class LDAPLoginModule(LoginModule):
 
         return props
 
+    def configure(self, context, target_domain_type):
+        if target_domain_type == 'console' and context.console_domain is not None:
+            context.add_extra_resources(ModifyArtemisProfileForLdap(context.console_domain.get_name()))
+
 
 class CopyKeycloakDependencies(ExtraResource):
     def create(self, dest_dir):
@@ -376,6 +380,33 @@ class CopyKeycloakDependencies(ExtraResource):
         d_url = 'https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.10.5/jackson-databind-2.10.5.jar'
         keycloak_deps.append((d_url, dest_file_name))
         return keycloak_deps
+
+
+class ModifyArtemisProfileForLdap(ExtraResource):
+    def __init__(self,  console_realm):
+        self.hawtio_realm = console_realm
+
+    def create(self, dest_dir):
+        artemis_profile = Path(dest_dir).joinpath(ARTEMIS_PROFILE)
+        if os.path.isfile(artemis_profile.absolute()):
+            args_str = StringIO()
+            args_str.write('\n')
+            args_str.write('# hawtio keycloak integration java opts\n')
+            args_str.write('JAVA_ARGS="${JAVA_ARGS} ')
+            args_str.write('-Dhawtio.authenticationEnabled=true')
+            args_str.write(' -Dhawtio.realm=')
+            args_str.write(self.hawtio_realm)
+            args_str.write('"\n')
+
+            with open(artemis_profile.absolute(), "rt") as profile_file:
+                profile_content = profile_file.read()
+                profile_content = re.sub(r'-Dhawtio.disableProxy=true ', '', profile_content)
+                profile_content = re.sub(r'-Dhawtio.realm=activemq ', '', profile_content)
+                profile_content = re.sub(r'-Dhawtio.offline=true ', '', profile_content)
+
+            with open(artemis_profile.absolute(), "wt") as profile_file:
+                profile_file.write(profile_content)
+                profile_file.write(args_str.getvalue())
 
 
 class ModifyArtemisProfileForKeycloak(ExtraResource):

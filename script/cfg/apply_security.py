@@ -239,6 +239,92 @@ class GuestLoginModule(LoginModule):
         return [[key_guest_user, guest_user], [key_guest_role, guest_role]]
 
 
+class LDAPLoginModule(LoginModule):
+    def __init__(self, name, module1):
+        LoginModule.__init__(self, name)
+        self.module = module1
+
+    def get_class_name(self):
+        return 'org.apache.activemq.artemis.spi.core.security.jaas.LDAPLoginModule'
+
+    def get_properties(self):
+        props = [
+            ['initialContextFactory', self.module['initialcontextfactory'] or 'com.sun.jndi.ldap.LdapCtxFactory'],
+            ['connectionURL', self.module['connectionurl']],
+            ['authentication', self.module['authentication'] or 'simple'],
+            ['connectionUsername', self.module['connectionusername']],
+            ['connectionPassword', self.module['connectionpassword']],
+            ['connectionProtocol', self.module['connectionprotocol'] or 's'],
+            ['userBase', self.module['userbase']],
+            ['userSearchMatching', self.module['usersearchmatching']],
+            ['userSearchSubtree', self.module['usersearchsubtree'] or 'false'],
+            ['roleBase', self.module['rolebase']],
+            ['roleSearchMatching', self.module['rolesearchmatching']],
+            ['roleSearchSubtree', self.module['rolesearchsubtree'] or 'false']
+        ]
+
+        if 'saslloginconfigscope' in self.module:
+            sasl_login_config_scope = self.module['saslloginconfigscope']
+            if sasl_login_config_scope is not None:
+                props.append(["saslLoginConfigScope", sasl_login_config_scope])
+
+        if 'connectionpool' in self.module:
+            connection_pool = self.module['connectionpool']
+            if connection_pool is not None:
+                props.append(["connectionPool", connection_pool])
+
+        if 'connectiontimeout' in self.module:
+            connection_timeout = self.module['connectiontimeout']
+            if connection_timeout is not None:
+                props.append(["connectionTimeout", connection_timeout])
+
+        if 'readtimeout' in self.module:
+            read_timeout = self.module['readtimeout']
+            if read_timeout is not None:
+                props.append(["readTimeout", read_timeout])
+
+        if 'userrolename' in self.module:
+            user_role_name = self.module['userrolename']
+            if user_role_name is not None:
+                props.append(["userRoleName", user_role_name])
+
+        if 'rolename' in self.module:
+            role_name = self.module['rolename']
+            if role_name is not None:
+                props.append(["roleName", role_name])
+
+        if 'authenticateuser' in self.module:
+            authenticate_user = self.module['authenticateuser']
+            if authenticate_user is not None:
+                props.append(["authenticateUser", authenticate_user])
+
+        if 'referral' in self.module:
+            referral = self.module['referral']
+            if referral is not None:
+                props.append(["referral", referral])
+
+        if 'ignorepartialresultexception' in self.module:
+            ignore_partial_result_exception = self.module['ignorepartialresultexception']
+            if ignore_partial_result_exception is not None:
+                props.append(["ignorePartialResultException", ignore_partial_result_exception])
+
+        if 'expandroles' in self.module:
+            expand_roles = self.module['expandroles']
+            if expand_roles is not None:
+                props.append(["expandRoles", expand_roles])
+
+        if 'expandrolesmatching' in self.module:
+            expand_roles_matching = self.module['expandrolesmatching']
+            if expand_roles_matching is not None:
+                props.append(["expandRolesMatching", expand_roles_matching])
+
+        return props
+
+    def configure(self, context, target_domain_type):
+        if target_domain_type == 'console' and context.console_domain is not None:
+            context.add_extra_resources(ModifyArtemisProfileForLdap(context.console_domain.get_name()))
+
+
 class CopyKeycloakDependencies(ExtraResource):
     def create(self, dest_dir):
         # for upstream may download
@@ -294,6 +380,33 @@ class CopyKeycloakDependencies(ExtraResource):
         d_url = 'https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.10.5/jackson-databind-2.10.5.jar'
         keycloak_deps.append((d_url, dest_file_name))
         return keycloak_deps
+
+
+class ModifyArtemisProfileForLdap(ExtraResource):
+    def __init__(self,  console_realm):
+        self.hawtio_realm = console_realm
+
+    def create(self, dest_dir):
+        artemis_profile = Path(dest_dir).joinpath(ARTEMIS_PROFILE)
+        if os.path.isfile(artemis_profile.absolute()):
+            args_str = StringIO()
+            args_str.write('\n')
+            args_str.write('# hawtio keycloak integration java opts\n')
+            args_str.write('JAVA_ARGS="${JAVA_ARGS} ')
+            args_str.write('-Dhawtio.authenticationEnabled=true')
+            args_str.write(' -Dhawtio.realm=')
+            args_str.write(self.hawtio_realm)
+            args_str.write('"\n')
+
+            with open(artemis_profile.absolute(), "rt") as profile_file:
+                profile_content = profile_file.read()
+                profile_content = re.sub(r'-Dhawtio.disableProxy=true ', '', profile_content)
+                profile_content = re.sub(r'-Dhawtio.realm=activemq ', '', profile_content)
+                profile_content = re.sub(r'-Dhawtio.offline=true ', '', profile_content)
+
+            with open(artemis_profile.absolute(), "wt") as profile_file:
+                profile_file.write(profile_content)
+                profile_file.write(args_str.getvalue())
 
 
 class ModifyArtemisProfileForKeycloak(ExtraResource):
@@ -477,10 +590,19 @@ class JaasLoginConfig:
                         else:
                             login_config_stream.write("       reload=false\n")
                     i = 0
-                    size = len(m.get_properties())
-                    for prop in m.get_properties():
+                    props = m.get_properties() # call properties only once
+                    size = len(props)
+                    for prop in props:
                         i += 1
-                        login_config_stream.write("       " + prop[0] + '="' + prop[1] + '"')
+                        if prop[1] is True:
+                            propstr = 'true'
+                        elif prop[1] is False:
+                            propstr = 'false'
+                        else:
+                            propstr = str(prop[1])
+
+                        login_config_stream.write("       " + prop[0] + '="' + propstr + '"')
+
                         if i == size:
                             # last one
                             login_config_stream.write(";\n\n")
@@ -526,7 +648,9 @@ class JaasLoginConfig:
                             current_domain.add_login_module(current_module)
                         else:
                             # properties
-                            prop_pair = each_line.strip().split('=')
+                            p = re.compile('^([^"]*)="?(.*)"?')
+                            m = p.match(each_line.strip())
+                            prop_pair = [m.group(1), m.group(2)]
                             if prop_pair[0] == 'debug':
                                 current_module.set_debug(bool(prop_pair[1]))
                             elif prop_pair[0] == 'reload':
@@ -612,6 +736,7 @@ class ConsoleDomain(SecurityDomain):
         SecurityDomain.__init__(self, domain, domain_type, context)
 
     def configure(self, config_context):
+        print("configuring console domain", self.get_name())
         login_config = JaasLoginConfig(config_context.get_login_config_file())
         login_config.update_console_domain(self, config_context)
         for lm in self.login_modules:
@@ -1062,6 +1187,7 @@ class ConfigContext:
             self.broker_security_settings.configure(self)
 
     def apply_management(self):
+        print("Applying management settings")
         if self.management_setting:
             self.management_setting.configure(self)
 
@@ -1091,6 +1217,10 @@ class ConfigContext:
             guestloginmodules = self.security_cr['spec']['loginmodules']['guestloginmodules']
             for module in guestloginmodules:
                 self.add_login_module(GuestLoginModule(module['name'], module))
+
+            ldaploginmodules = self.security_cr['spec']['loginmodules']['ldaploginmodules']
+            for module in ldaploginmodules:
+                self.add_login_module(LDAPLoginModule(module['name'], module))
 
             keycloakloginmodules = self.security_cr['spec']['loginmodules']["keycloakloginmodules"]
             for module in keycloakloginmodules:

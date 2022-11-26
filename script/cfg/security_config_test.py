@@ -165,6 +165,52 @@ class TestSecurityConfiguration(unittest.TestCase):
                                                          '  "confidential-port": 0',
                                                          '}']))
 
+    def test_config_ldap(self):
+        self.context.parse_config_cr("./test-ldap-cr.yaml")
+        self.context.apply()
+        the_checker = checker.SecurityConfigurationChecker(self.context)
+        self.assertTrue(the_checker.bootstrap_has_broker_domain('activemq'))
+        self.assertTrue(the_checker.has_broker_domain("activemq"))
+        self.assertTrue(the_checker.has_broker_domain("console"))
+        self.assertTrue(the_checker.domain_has_prop_login_module('activemq', 'sufficient', '', ''))
+        self.assertTrue(the_checker.prop_module_has_roles(
+            ["admin = 9gIY0RrT", "root = superman"]))
+        self.assertTrue(the_checker.prop_module_has_users([
+                                                              "9gIY0RrT = ENC(1024:6FB4782966A8C4303569AE7DEFA4A8A0E8BAD0019CD77814CE43E2CAF4F84B4A:046C735DED79CD146A9ADB8C756732BD02EF8CE42704CC43B89C82F6A765C2D706146A9DE521DA71C0283F6D57FBC623EACE687F2EF936A391D8AD263AB71B67",
+                                                              "superman = ihavepower"]))
+        self.assertTrue(the_checker.broker_has_security_settings('Info', {'createDurableQueue': 'amq',
+                                                                       'deleteDurableQueue': 'amq',
+                                                                       'createNonDurableQueue': 'amq',
+                                                                       'deleteNonDurableQueue': 'amq',
+                                                                       'send': 'guest',
+                                                                       'consume': 'amq'}))
+        self.assertTrue(the_checker.broker_has_security_settings('#', {'createDurableQueue': 'root',
+                                                                       'deleteDurableQueue': 'root',
+                                                                       'createNonDurableQueue': 'root',
+                                                                       'deleteNonDurableQueue': 'root',
+                                                                       'createTempQueue': 'root',
+                                                                       'deleteTempQueue': 'root',
+                                                                       'send': 'root',
+                                                                       'consume': 'root',
+                                                                       'manage': 'root',
+                                                                       'browse': 'root',
+                                                                       'createAddress': 'root',
+                                                                       'deleteAddress': 'root'}))
+        self.assertTrue(the_checker.has_hawtio_roles('"operator,reporter"'))
+        self.assertTrue(the_checker.artemis_profile_has_line('JAVA_ARGS="${JAVA_ARGS} -Dhawtio.authenticationEnabled=true -Dhawtio.realm=console"'))
+        self.assertTrue(the_checker.management_has_access_list([{'domain': 'org.apache.activemq.artemis',
+                                                                 'key': None,
+                                                                 'list': [
+                                                                     ('list*', 'operator,reporter'),
+                                                                     ('get*', 'operator,reporter'),
+                                                                     ('is*', 'operator,reporter'),
+                                                                     ('set*', 'operator'),
+                                                                     ('browse*', 'operator'),
+                                                                     ('count*', 'operator,reporter'),
+                                                                     ('*', 'operator')
+                                                                 ]}
+                                                                ]))
+
     def test_warnings_on_users_without_roles(self):
         self.context.parse_config_cr("./test-prop-user-no-roles-cr.yaml")
         captured_output = io.StringIO()

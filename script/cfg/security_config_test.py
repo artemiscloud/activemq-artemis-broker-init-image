@@ -190,6 +190,12 @@ class TestSecurityConfiguration(unittest.TestCase):
         self.assertTrue(wanted1 in contents)
         self.assertTrue(wanted2 in contents)
 
+    def test_hawtio_domain_update_in_artemis_profile(self):
+        self.context.parse_config_cr("./test-hawtio-console-domain-cr.yaml")
+        self.context.apply()
+        the_checker = checker.SecurityConfigurationChecker(self.context)
+        self.assertTrue(the_checker.artemis_profile_has_key("-Dhawtio.realm=console2"))
+
 
 if __name__ == '__main__':
     unittest.main()

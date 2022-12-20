@@ -546,3 +546,11 @@ class SecurityConfigurationChecker:
                     return False
                 i += 1
         return True
+
+    def artemis_profile_has_key(self, expected_key):
+        artemis_profile_file = self.context.get_artemis_profile_file()
+        with open(artemis_profile_file, "rt") as profile:
+            for each_line in profile:
+                if each_line.find(expected_key) >= 0:
+                    return True
+        return False

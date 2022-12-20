@@ -607,7 +607,7 @@ class BrokerSecurityDomain(SecurityDomain):
                 lm.configure(config_context, 'broker')
 
 
-class ConsoleDomain(SecurityDomain):
+class ConsoleDomain(SecurityDomain, ExtraResource):
     def __init__(self, domain, domain_type, context):
         SecurityDomain.__init__(self, domain, domain_type, context)
 
@@ -616,6 +616,21 @@ class ConsoleDomain(SecurityDomain):
         login_config.update_console_domain(self, config_context)
         for lm in self.login_modules:
             lm.configure(config_context, self.domain_type)
+        config_context.add_extra_resources(self)
+
+    def create(self, dest_dir):
+        self.update_hawtio_flag()
+
+    def update_hawtio_flag(self):
+        dst_artemis_profile = Path(self.context.dst_root).joinpath(ARTEMIS_PROFILE)
+        lines = []
+        with open(dst_artemis_profile.absolute(), "rt") as artemis_profile:
+            for line in artemis_profile:
+                if line.find("-Dhawtio.realm=activemq") >= 0:
+                    line = line.replace("-Dhawtio.realm=activemq", "-Dhawtio.realm=" + self.domain_name)
+                lines.append(line)
+        with open(dst_artemis_profile.absolute(), "wt") as artemis_profile:
+            artemis_profile.writelines(lines)
 
 
 class ManagementSetting:
@@ -1071,7 +1086,6 @@ class ConfigContext:
                 extra_res.create(self.dst_root)
 
     def apply(self):
-        # self.update_console_domain() # this should go in management setting
         self.apply_login_config()
         self.apply_broker_security()
         self.apply_management()

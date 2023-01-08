@@ -293,6 +293,15 @@ class CopyKeycloakDependencies(ExtraResource):
         dest_file_name = lib_dir.joinpath(jackson_databind_jar)
         d_url = 'https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.10.5/jackson-databind-2.10.5.jar'
         keycloak_deps.append((d_url, dest_file_name))
+        # jboss logging dependency
+        jboss_logging_jar = 'jboss-logging-3.4.1.Final.jar'
+        dest_file_name = lib_dir.joinpath(jboss_logging_jar)
+        d_url = 'https://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.4.1.Final/jboss-logging-3.4.1.Final.jar'
+        keycloak_deps.append((d_url, dest_file_name))
+        jboss_logging_manager_jar = 'jboss-logmanager-2.1.7.Final.jar'
+        dest_file_name = lib_dir.joinpath(jboss_logging_manager_jar)
+        d_url = 'https://repo1.maven.org/maven2/org/jboss/logmanager/jboss-logmanager/2.1.7.Final/jboss-logmanager-2.1.7.Final.jar'
+        keycloak_deps.append((d_url, dest_file_name))
         return keycloak_deps
 
 

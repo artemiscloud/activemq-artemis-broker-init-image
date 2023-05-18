@@ -9,6 +9,17 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      snapshot:
+        description: 'Snapshot'
+        required: false
+        default: false
+        type: boolean
+      trigger_children:
+        description: 'Trigger children'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
 
@@ -21,6 +32,12 @@ jobs:
 
       - name: Execute the tests
         run: ./run_test.sh
+
+      - name: Update base image
+        if: ${{ inputs.snapshot }}
+        run: |
+          BASE_IMAGE="quay.io/${{ secrets.QUAY_NAMESPACE }}/activemq-artemis-broker-kubernetes@$(skopeo inspect docker://quay.io/${{ secrets.QUAY_NAMESPACE }}/activemq-artemis-broker-kubernetes:snapshot | jq -r '.Digest')"
+          sed -i "s~FROM.*~FROM ${BASE_IMAGE}~g" Dockerfile
 
       - name: Build the image
         run: docker build --label quay.expires-after=90d --label git-sha=$GITHUB_SHA --tag $IMAGE_NAME:latest .
@@ -37,3 +54,10 @@ jobs:
           docker push quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:$IMAGE_TAG &&
           docker tag $IMAGE_NAME:latest quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:dev.latest &&
           docker push quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:dev.latest
+
+      - name: Push the snapshot image
+        if: ${{ github.event_name == 'schedule' || inputs.snapshot }}
+        run: >
+          docker login --username=${{ secrets.QUAY_USERNAME }} --password=${{ secrets.QUAY_PASSWORD }} quay.io &&
+          docker tag $IMAGE_NAME:latest quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:snapshot &&
+          docker push quay.io/${{ secrets.QUAY_NAMESPACE }}/$IMAGE_NAME:snapshot

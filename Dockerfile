@@ -1,4 +1,4 @@
-FROM quay.io/artemiscloud/activemq-artemis-broker-kubernetes@sha256:6f2da9ecd8f5021964d0dfa85144830efcfbd0462d18f18f036971e5f17b3bb6
+FROM quay.io/artemiscloud/activemq-artemis-broker-kubernetes@sha256:ec9a79f4616c6bd95bd7a380101c0b3873aa18cc937955ba6ce1d3684b02d6b1
 
 USER root
 

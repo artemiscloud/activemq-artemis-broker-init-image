@@ -1,3 +1,7 @@
+#### :warning:This project is now part of the ArkMQ initiative. This repository has been archived as all activities are now happening in the [corresponding ArkMQ repository](https://github.com/arkmq-org/activemq-artemis-broker-init-image). See [here](https://artemiscloud.io/community/transition/) for the ArkMQ transition details.
+
+---
+
 # artemis-broker-init
 Init container image that configures artemis broker instances
 
